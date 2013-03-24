@@ -16,8 +16,7 @@ public class SndMsgIntentService extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 		
 		String contact_num = intent.getStringExtra("contact_num");
-		String sms = "[TAG] some text";
-		
+		String sms = "[WhereAreYou] some text";
 		 
 		Intent broadcastIntent = new Intent();
 		broadcastIntent.putExtra("contact_name", intent.getStringExtra("contact_name"));
@@ -34,7 +33,7 @@ public class SndMsgIntentService extends IntentService {
 		} finally {
 			broadcastIntent.setAction(MainActivity.SmsStatusReceiver.AZIONE); 
 			broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
-			sendBroadcast(broadcastIntent);
+			sendStickyBroadcast(broadcastIntent);
 		}
 	}
 }

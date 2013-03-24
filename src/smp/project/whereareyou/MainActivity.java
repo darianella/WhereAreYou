@@ -3,26 +3,28 @@ package smp.project.whereareyou;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.Enumeration;
 
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-
 import android.widget.Button;
 import android.widget.TextView;
-
-
-
+import android.widget.Toast;
 
 
 public class MainActivity extends Activity implements OnClickListener {
@@ -30,10 +32,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	SmsStatusReceiver ssr;
 	IntentFilter smsFilter;
 	
-//	NetworkChangeReceiver ncr;
-//	IntentFilter connectivityFilter;
-
-	
+	String ipAddr;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,80 +40,91 @@ public class MainActivity extends Activity implements OnClickListener {
 		setContentView(R.layout.activity_main);
 		Button bt = (Button) findViewById(R.id.button1);
 		
-		if (isOnline()) {
-			Log.d("NET", "sono connesso");
-		} else {
-			Log.d("NET", "non sono connesso");
-		}
+		onLine();
 		
 		bt.setOnClickListener(this);
 		
 		smsFilter = new IntentFilter(SmsStatusReceiver.AZIONE); 
 		smsFilter.addCategory(Intent.CATEGORY_DEFAULT);
 		ssr = new SmsStatusReceiver();
-		
-		
-//		connectivityFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION); 
-//		
-//		connectivityFilter.addCategory(Intent.CATEGORY_DEFAULT);
-//		ncr = new NetworkChangeReceiver();
-
-		
-		
 	}
-	/*
-	 * Verifica se è attiva la connessione a internet
-	 * Se sono connesso al wifi.. ricevo connessioni in ingresso o ho problemi di firewall
-	 * */
-	private boolean isOnline() {
+	private void onLine() {
+		Log.d("TMP", "Chiamata la onLine");
 		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo ni = cm.getActiveNetworkInfo();
-		if(ni == null)
-			return false;
-        else {
-       	 	Log.d("NET", ni.getTypeName());
-        
-       	 	
-       	// non l'ho ancora testato
-   	 	try {
-       		for (Enumeration<NetworkInterface> en = 
-       						NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+		if (ni == null) {
+			Log.d("NET", "Attenzione: Connessione dati non disponibile");
+			Toast.makeText(getApplicationContext(), 
+					"Attenzione: Connessione dati non disponibile",
+					Toast.LENGTH_LONG).show();
+		}
+        else { // posso essere connesso al wifi o al mobile
+        	ni = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        	if (ni.isConnected()) { // sono connesso al wifi.. 
+        		Log.d("NET", "Connessione dati non disponibile, sono connesso al wifi");
+        		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        		builder.setTitle("Warning");
+   	 			builder.setMessage("Per far funzionare l'applicazione disattivare la " +
+   	 				"connessione WIFI e utilizzare quella Mobile");
+   	 			builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+   	 				public void onClick(DialogInterface dialog, int id) {
+   	 					final WifiManager wifiManager = (WifiManager) getSystemService(MainActivity.WIFI_SERVICE);
+   	 					if (wifiManager.isWifiEnabled())
+   	 						wifiManager.setWifiEnabled(false);
+   	 					new IpTask().execute();
+   	 						
+   	 				}
+   	 			});
+   	 			builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+   	 				public void onClick(DialogInterface dialog, int id) {
+   	 					Log.d("[AlertD]","Ho cliccato il tasto NO");
+   	 					//FIXME: impostare ip a false
+   	 				}
+   	 			});
+   	 			AlertDialog alert = builder.create();
+   	 			alert.show();
+        	} else { // connesso al Mobile
+        		Log.d("NET", "Connesso");
+        		myIp();
+   	 		}
+	   	}
+	}
+	
+	private boolean myIp() {
+       	boolean result = false;
+       	ipAddr = "no Ip Address";
+		try {	
+       		for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
        			NetworkInterface intf = en.nextElement();
        			for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
        				InetAddress inetAddress = enumIpAddr.nextElement();
        				if (!inetAddress.isLoopbackAddress()) {
-       					Log.d("prova", inetAddress.getHostAddress().toString());
+       					ipAddr = inetAddress.getHostAddress().toString();
+       					Log.d("NET", ipAddr);
+       					result = true;
        				}
        			}
        		}
-       	} catch (Exception ex) {
-       		Log.e("asd", ex.toString());
+       	} catch (SocketException se) {
+       		se.printStackTrace();
        	}
-       		
-       		
-       	 	
-       	 	
-       	 	
-       	 	
-       	 	
-       	 	
-        	return ni.isConnected();
-        }
+		TextView tv = (TextView) findViewById(R.id.textView1);
+		tv.setText(ipAddr);
+       	return result;
 	}
-	
+		
 	@Override
 	protected void onResume() { 
 		super .onResume();
 			Log.d("ACTION","chiamata la onresume");
 			registerReceiver(ssr, smsFilter);
-			//registerReceiver(ssr, connectivityFilter);
+			myIp();
 	}
 	@Override
 	protected void onPause() { 
 		super .onPause();
 		Log.d("ACTION","chiamata la onpause");
-		//unregisterReceiver(ssr);	// se tolgo il commento non riceve l'intent dall sms
-	//	unregisterReceiver(ncr);
+		unregisterReceiver(ssr);
 	}
 	
 	@Override
@@ -134,6 +144,10 @@ public class MainActivity extends Activity implements OnClickListener {
 		 * */
 		Intent intent = new Intent(this, ListActivityContatti.class);
 		startActivity(intent);
+	}
+	
+	public void clickedExit(View v) {
+		//FIXME: da fare...
 	}
 	
 	
@@ -161,18 +175,38 @@ public class MainActivity extends Activity implements OnClickListener {
     		tv.setText(phone_num);
 	    	}
 	    }
-	// Riceve gli intent inviati dal ConnectivityManager in seguito a cambiamenti nella rete..
-	// rivedere...
-	/*public class NetworkChangeReceiver extends BroadcastReceiver {
-		
-	    
-		@Override
-    	public void onReceive(Context context, Intent intent) {
-    		Log.d("NET", "ricevuto intent dal connectivity manager!");
-	    	}
-	    }
-*/
 
 
+	/*
+	 * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	 * 	ASYNCTASK
+	 * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	 *
+	 * */
 	
+	
+	public class IpTask extends AsyncTask <String, Integer, Void> {
+		
+		int attempts = 0;
+//		@Override
+//		protected void onPostExecute(String result) {
+//			super .onPostExecute(result);
+//			TextView tv = (TextView) findViewById(R.id.textView1);
+//			tv.setText(ipAddr);
+		
+		@Override
+		protected Void doInBackground(String... arg0) {
+			try {
+				while (attempts < 3) {
+					Thread.sleep(4000);
+					if (myIp()) break;
+					attempts++;
+				}
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+		}
+	}
 }
