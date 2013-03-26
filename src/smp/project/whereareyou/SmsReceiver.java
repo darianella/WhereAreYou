@@ -1,5 +1,7 @@
 package smp.project.whereareyou;
 
+import java.util.StringTokenizer;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,26 +17,31 @@ public class SmsReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		Bundle bundle = intent.getExtras(); // estraiamo i dati dall'intent
-		Object messages[] = (Object[]) bundle.get("pdus"); //da tutti i dati preleviamo quelli relativi al pdu: formato std sms
+		Object messages[] = (Object[]) bundle.get("pdus"); //da tutti i dati preleviamo quelli relativi al pdu: std sms
+		
 		SmsMessage smsMessage[] = new SmsMessage[messages.length];
 		for (int n = 0; n < messages.length; n++) {
 			smsMessage[n] = SmsMessage.createFromPdu((byte[]) messages[n]);
 		}
-		//FIXME: PARSING DI STRINGA BRUTTA, MA FUNZIONA
-		String mess = new String(smsMessage[0].getMessageBody().toString());
-		String[] tmp = mess.split(" ");
+		String originAddr = smsMessage[0].getOriginatingAddress();
+        String mess = smsMessage[0].getMessageBody();   
+        
+        Log.d("[sms_number]", originAddr);
+        
+		
 		// Verifico testo messaggio
-		if (tmp[0].equals("[WhereAreYou]")) { // è il messaggio dell'app
+        
+//        Log.d("DEB","Sms: " + mess.split(" ").toString());
+        StringTokenizer st = new StringTokenizer(mess, ";");
+        
+		if (st.nextToken().equals("[WhereAreYou]")) { // è il messaggio dell'app
 			Log.d("DEB","Sms request recv");
-			//se do max prio a questo receiver e riconosco il tipo di messaggio, non lo faccio gestire agli altri receiver
-			this.abortBroadcast(); 
-			
-//	        Intent broadcastIntent = new Intent(); 
-//	        broadcastIntent.setAction(DoveSeiActivity.DoveSeiReceiver.AZIONE); 
-//	        broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT); 
-//	        context.sendBroadcast(broadcastIntent);
+			this.abortBroadcast(); // Cosi non faccio elaborare la richiesta ad altri 
+	        Intent in = new Intent(context, RecvSmsIntentService.class);
+	        in.putExtra("sms_number", originAddr);
+	        in.putExtra("sms_ip", st.nextToken());  
+	        context.startService(in);
 		} else
 			Log.d("DEB","Sms no dell'appl");
-				
 	}
 }

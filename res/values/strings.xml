@@ -10,6 +10,11 @@
     <string name="smsStatus">no request yet sent</string>
     <string name="contactSelected">(Contact)</string>
     <string name="contactNum">(Number)</string>
-    
+    <string name="title_activity_recv_req">RecvReqActivity</string>
+    <string name="text_ra">Request received from</string>
+    <string name="large_text">Large Text</string>
+    <string name="button1">Accept</string>
+    <string name="button2">Reject</string>
+    <string name="title_activity_connection">ConnectionActivity</string>
 
 </resources>

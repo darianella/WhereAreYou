@@ -26,7 +26,7 @@ public class ListActivityContatti extends Activity implements OnItemClickListene
 
 	Cursor cur;
 	String selectedNum;
-	String name;
+	String ContactName;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -57,7 +57,7 @@ public class ListActivityContatti extends Activity implements OnItemClickListene
 		else {
 			cur.moveToFirst();
 			while (!cur.isAfterLast()) { 
-				adapter.add(cur.getString(1));
+				adapter.add(cur.getString(1)); //1: numero di colonna
 				cur.moveToNext();
 			}
 		}
@@ -71,7 +71,7 @@ public class ListActivityContatti extends Activity implements OnItemClickListene
 		
 		cur.moveToPosition(pos); //sposto il cursore sulla riga selezionata
 		String idContact = cur.getString(0); //mi sposta sulla colonna dell _ID
-		name = cur.getString(1);
+		ContactName = cur.getString(1);
 		// genero un nuovo cursore che può accedere ai numeri associati all'id del contatto selezionato
 		Cursor cur_phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null, 
 										ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = "+ idContact, null, null);
@@ -88,7 +88,7 @@ public class ListActivityContatti extends Activity implements OnItemClickListene
 		selectedNum = charSequenceItems[0].toString(); 
 		// caso in cui si sono più numeri per un singolo contatto
         AlertDialog.Builder builder = new AlertDialog.Builder(ListActivityContatti.this);
-        builder.setTitle("Select's "+ name + "number")
+        builder.setTitle(ContactName + "'s number")
         .setSingleChoiceItems(charSequenceItems, 0, 
         		new DialogInterface.OnClickListener() {
         			public void onClick(DialogInterface dialog, int whichButton) {
@@ -99,10 +99,14 @@ public class ListActivityContatti extends Activity implements OnItemClickListene
         .setPositiveButton("Send request", 
         		new DialogInterface.OnClickListener() {
         			public void onClick(DialogInterface dialog, int whichButton) {
-        			Intent intent = new Intent(ListActivityContatti.this, SndMsgIntentService.class);
-        			intent.putExtra("contact_num", selectedNum);
-        			intent.putExtra("contact_name", name);
-        			startService(intent);
+        			
+        			Intent broadcastIntent = new Intent();
+        			broadcastIntent.putExtra("contact_name", ContactName);
+        			broadcastIntent.putExtra("contact_num", selectedNum);
+        			broadcastIntent.setAction(MainActivity.SendSmsManagerReceiver.AZIONE); 
+        			broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
+        			sendStickyBroadcast(broadcastIntent);
+        			//sendBroadcast(broadcastIntent);
         			finish();
         		} 
         	}
