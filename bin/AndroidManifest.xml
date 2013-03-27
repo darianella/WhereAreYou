@@ -67,6 +67,10 @@
             android:name="smp.project.whereareyou.ConnectionActivity"
             android:label="@string/title_activity_connection" >
         </activity>
+        <activity
+            android:name="smp.project.whereareyou.MapActivity"
+            android:label="@string/title_activity_map" >
+        </activity>
     </application>
 
 </manifest>

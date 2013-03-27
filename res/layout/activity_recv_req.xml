@@ -8,25 +8,12 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".RecvReqActivity" >
 
-  
-
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/text_ra"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/textView1"
-        android:layout_below="@+id/textView1"
-        android:layout_marginRight="38dp"
-        android:layout_marginTop="26dp"
-        android:text="@string/large_text"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Button
@@ -37,7 +24,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="49dp"
         android:text="@string/button2"
-        android:onClick="rejectReq()" />
+        android:onClick="rejectReq" />
 
     <Button
         android:id="@+id/button1"
@@ -48,9 +35,9 @@
         android:layout_marginTop="21dp"
         android:layout_toLeftOf="@+id/button2"
         android:text="@string/button1"
-        android:onClick="acceptReq()" />
+        android:onClick="acceptReq" />
 
-    <ImageView
+   <!--   <ImageView
         android:id="@+id/imageView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -58,5 +45,48 @@
         android:layout_centerVertical="true"
         android:contentDescription="Contacts Image"
         android:src="@drawable/ic_tab_user_selected" />
+    -->
+
+    <EditText
+        android:id="@+id/editText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView1"
+        android:layout_centerHorizontal="true"
+        android:ems="10"
+        android:inputType="textPersonName" >
+
+        <requestFocus />
+    </EditText>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editText1"
+        android:layout_centerHorizontal="true"
+        android:text="@string/large_text"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    
+    <!-- FIXME: PER FAR FUNZIONARE IL CLIENT SENZA SMS -->
+    <EditText
+        android:id="@+id/editText2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/button2"
+        android:layout_below="@+id/button2"
+        android:layout_marginTop="36dp"
+        android:ems="10" android:inputType="text"/>
+    <!-- FIXME: PER FAR FUNZIONARE IL CLIENT SENZA SMS -->
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editText2"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:text="@string/ConnectButton" 
+        android:onClick="debugClient" />
 
 </RelativeLayout>

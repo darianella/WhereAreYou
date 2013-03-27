@@ -16,5 +16,8 @@
     <string name="button1">Accept</string>
     <string name="button2">Reject</string>
     <string name="title_activity_connection">ConnectionActivity</string>
+    <string name="buttonServer">Go to server</string>
+    <string name="ConnectButton">Connect to server</string>
+    <string name="title_activity_map">MapActivity</string>
 
 </resources>

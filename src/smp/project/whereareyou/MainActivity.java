@@ -1,18 +1,29 @@
 package smp.project.whereareyou;
 
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.SocketException;
 import java.util.Enumeration;
+
+import smp.project.whereareyou.RecvReqActivity.ClientTask;
+
 
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 //import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -135,12 +146,12 @@ public class MainActivity extends Activity implements OnClickListener {
 		unregisterReceiver(smr);
 	}
 	
-	@Override
+	/*@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
-	}
+	}*/
 
 	@Override
 	public void onClick(View v) {
@@ -197,6 +208,8 @@ public class MainActivity extends Activity implements OnClickListener {
 					startService(intent);
 //					Log.d("DEb","avrei inviato un messaggio" );
 					tv.setText("SMS SEND");
+						new ServerTask().execute("un qualche testo");
+					
 		    	} else {
 		    		Log.d("DEb","Impossibile inviare il messaggio -> ip NON valido" );
 		    		tv.setText("SMS DOESN'T SEND, NO IP");
@@ -212,33 +225,79 @@ public class MainActivity extends Activity implements OnClickListener {
 	 * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	 *
 	 * */
+	//FIXME: per debuggare il client senza il messaggio
+		public void debugClient(View v) {
+			Log.d("Debug client","Simulo di aver ricevuto un messaggio..");
+			Intent resultIntent = new Intent(this, RecvReqActivity.class);
+			resultIntent.putExtra("sms_number", "12345");
+			resultIntent.putExtra("sms_ip", "127.0.0.1");
+			startActivity(resultIntent);
+			
+			
+		}
+	
+	public void debugServer(View v) {
+		
+		Log.d("Debug server","Come se avessi inviato un mess e fossi in attesa");
+		new ServerTask().execute("un qualche testo");
+	}
 	
 	
-//	public class IpTask extends AsyncTask <String, Integer, Void> {
-//		
-//		int attempts = 0;
-////		@Override
-////		protected void onPostExecute(String result) {
-////			super .onPostExecute(result);
-////			TextView tv = (TextView) findViewById(R.id.textView1);
-////			tv.setText(ipAddr);
-//		
-//		@Override
-//		protected Void doInBackground(String... arg0) {
-//			try {
-//				while (attempts < 3) {
-//					Thread.sleep(4000);
-//					if (!ipAddr.equals(NO_IP)) 
-//						return null;
-//					myIp();
-//					attempts++;
-//				}
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			return null;
-//		}
-//	}
+	public class ServerTask extends AsyncTask <String, Integer, Void> {
+		
+		ProgressDialog dialog;
+		
+		protected void onPreExecute() {
+			dialog = new ProgressDialog(MainActivity.this);
+			dialog.setTitle("Waiting...");
+	        dialog.show();
+			
+		}
+		/*protected void onPostExecute(String result) {
+			super .onPostExecute(result);
+			TextView tv = (TextView) findViewById(R.id.textView1);
+			tv.setText(ipAddr);
+		*/
+		@Override
+		protected Void doInBackground(String... arg0) {
+			Log.d("Debug server","Sono nella asynctask background");
+			int serverPort = 12345;
+			ServerSocket serverSocket;
+			Socket socket;
+			BufferedReader in;
+	        PrintStream out;
+	        String msg;
+			try {
+				serverSocket = new ServerSocket(serverPort);
+//				Log.d("server addr:", serverSocket.getInetAddress().getHostAddress());
+				socket = serverSocket.accept();
+				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				out = new PrintStream(socket.getOutputStream());
+				
+				
+				
+				
+				dialog.dismiss();
+				msg = in.readLine();
+				out.println("Hello by Server");
+				
+				Log.d("server rx:", msg);
+				
+				
+				out.close();
+				in.close();
+				socket.close();
+				serverSocket.close();
+				
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+			return null;
+			
+		
+		}
+	}
 }
 

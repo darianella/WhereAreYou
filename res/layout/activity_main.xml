@@ -66,5 +66,26 @@
 
         <requestFocus />
     </EditText>
+	
+	<!--FIXME: solo per debug: mi fa saltare diretto alle funzioni di server  -->
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editText1"
+        android:layout_marginTop="34dp"
+        android:layout_toRightOf="@+id/textView3"
+        android:text="@string/buttonServer" 
+        android:onClick="debugServer" />
+
+     <Button
+         android:id="@+id/button3"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignLeft="@+id/button1"
+         android:layout_below="@+id/button2"
+         android:layout_marginTop="27dp"
+         android:onClick="debugClient"
+         android:text="vai al clientside" />
 
 </RelativeLayout>
