@@ -1,36 +1,25 @@
 package smp.project.whereareyou;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
-
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
 import android.app.Activity;
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.QuickContactBadge;
 import android.widget.TextView;
 
 public class RecvReqActivity extends Activity {
@@ -50,7 +39,8 @@ public class RecvReqActivity extends Activity {
 		te.setText(retrieveContactName(phoneNumber));
 		TextView tv = (TextView) findViewById(R.id.textView2);
 		tv.setText(phoneNumber);
-		//FIXME: VERIFICARE DI ESSERE CONNESSO A INTERNET! magari usare lo stesso blocco sia qui che nel mainActivity
+		
+		//FIXME: VERIFICARE DI ESSERE CONNESSO A INTERNET! magari usare lo stesso blocco sia qui che nel mainActivityg
 		
         	
 /*		try {
@@ -118,7 +108,7 @@ public class RecvReqActivity extends Activity {
 	}
 	
 	public void rejectReq(View v) {
-		Log.d("deb", "richiesta rifiutata");
+		Log.d("deb", "richiesta rifiutata (per ora lancia MapActivity toFIXME)");
 		//FIXME: solo di prova..
 		Intent i = new Intent(this, MapActivity.class);
 		startActivity(i);

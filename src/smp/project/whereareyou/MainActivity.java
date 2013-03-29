@@ -12,7 +12,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Enumeration;
 
-import smp.project.whereareyou.RecvReqActivity.ClientTask;
 
 
 import android.net.ConnectivityManager;
@@ -30,7 +29,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
-import android.view.Menu;
+
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -168,8 +167,6 @@ public class MainActivity extends Activity implements OnClickListener {
 	/*public void clickedExit(View v) {
 		//FIXME: da fare...??
 	}*/
-	
-	
 	/*
 	 * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	 * 	BROADCAST RECEIVER
@@ -218,7 +215,6 @@ public class MainActivity extends Activity implements OnClickListener {
 			
 	    }
 	}
-
 	/*
 	 * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	 * 	ASYNCTASK
@@ -229,8 +225,8 @@ public class MainActivity extends Activity implements OnClickListener {
 		public void debugClient(View v) {
 			Log.d("Debug client","Simulo di aver ricevuto un messaggio..");
 			Intent resultIntent = new Intent(this, RecvReqActivity.class);
-			resultIntent.putExtra("sms_number", "12345");
-			resultIntent.putExtra("sms_ip", "127.0.0.1");
+			resultIntent.putExtra("sms_number", "11111");
+			resultIntent.putExtra("sms_ip", "0.0.0.1");
 			startActivity(resultIntent);
 			
 			

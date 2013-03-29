@@ -4,7 +4,7 @@
     <string name="app_name">WhereAreYou</string>
     <string name="action_settings">Settings</string>
     <string name="action_exit">Exit</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="hello_world">Ciao mondo!</string>
     <string name="contatti">Select contact</string>
     <string name="title_activity_list_activity_contatti">ListActivityContatti</string>
     <string name="smsStatus">no request yet sent</string>
