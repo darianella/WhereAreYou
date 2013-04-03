@@ -4,20 +4,22 @@
     <string name="app_name">WhereAreYou</string>
     <string name="action_settings">Settings</string>
     <string name="action_exit">Exit</string>
-    <string name="hello_world">Ciao mondo!</string>
+    <string name="my_ip">My Ip Address</string>
+    <string name="hello_world">Hello mondo</string>
     <string name="contatti">Select contact</string>
     <string name="title_activity_list_activity_contatti">ListActivityContatti</string>
     <string name="smsStatus">no request yet sent</string>
-    <string name="contactSelected">(Contact)</string>
+    <string name="contactSelected">Select contact or insert number manually</string>
     <string name="contactNum">(Number)</string>
     <string name="title_activity_recv_req">RecvReqActivity</string>
     <string name="text_ra">Request received from</string>
-    <string name="large_text">Large Text</string>
+    <string name="connection_status">My connection status</string>
     <string name="button1">Accept</string>
     <string name="button2">Reject</string>
     <string name="title_activity_connection">ConnectionActivity</string>
     <string name="buttonServer">Go to server</string>
     <string name="ConnectButton">Connect to server</string>
     <string name="title_activity_map">MapActivity</string>
+    <string name="button_send">Send</string>
 
 </resources>

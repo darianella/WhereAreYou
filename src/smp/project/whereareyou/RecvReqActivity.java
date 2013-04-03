@@ -1,14 +1,5 @@
 package smp.project.whereareyou;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
@@ -24,7 +15,9 @@ import android.widget.TextView;
 
 public class RecvReqActivity extends Activity {
 	
-	String ip_addr = "No ip";
+	private ConnectionUtility conn;
+	final Config config = new Config();
+	String serverAddr;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,36 +26,54 @@ public class RecvReqActivity extends Activity {
 		
 		Intent intent = getIntent();
 		String phoneNumber = intent.getStringExtra("sms_number");
-		ip_addr = intent.getStringExtra("sms_ip");
-		Log.d(" log ", phoneNumber + " " + ip_addr);
+		serverAddr = intent.getStringExtra("sms_ip");
+		Log.d(" log ", phoneNumber + " " + serverAddr);
 		EditText te = (EditText) findViewById(R.id.editText1);
 		te.setText(retrieveContactName(phoneNumber));
 		TextView tv = (TextView) findViewById(R.id.textView2);
 		tv.setText(phoneNumber);
 		
-		//FIXME: VERIFICARE DI ESSERE CONNESSO A INTERNET! magari usare lo stesso blocco sia qui che nel mainActivityg
-		
-        	
-/*		try {
-            InputStream inputStream = ContactsContract.Contacts.openContactPhotoInputStream(getContentResolver(),
-                        ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, new Long(cur.getLong(0))));
-            if (inputStream != null) {
-                // FIXME: non ruscivo a recuperare l'immagine.. spostare tutto e testare in mainactivity!!
-                Bitmap bitmap = BitmapFactory.decodeStream(is);
-				ImageView imageView = (ImageView) findViewById(R.id.image_view1);
+		conn = new ConnectionUtility();
+/*		
+  		try {
+    		InputStream inputStream = 
+        		ContactsContract.Contacts
+        			.openContactPhotoInputStream(getContentResolver(),
+            	ContentUris.withAppendedId(ContactsContract
+                    .Contacts.CONTENT_URI, new Long(cur.getLong(0))));
+        	if (inputStream != null) {
+// FIXME: non ruscivo a recuperare l'imm spostare tutto in mainactivity!!
+        		Bitmap bitmap = BitmapFactory.decodeStream(is);
+				ImageView imageView = 
+							(ImageView) findViewById(R.id.image_view1);
 				imageView.setImageBitmap(bitmap);
                 inputStream.close();
             }
         } catch (Exception e) {
             e.printStackTrace();
-   		} */
+   		} 
+*/
     }
+	@Override
+	protected void onResume() { 
+		super .onResume();
+			Log.d("ACTION","chiamata la onresume");
+			conn.isOnline(this);
+			Log.d("Client",conn.myIp);
+			TextView tv = (TextView) findViewById(R.id.textView3);
+			tv.setText(conn.myIp);
+			
+	}
+	@Override
+	protected void onPause() { 
+		super .onPause();
+//		Log.d("ACTION","chiamata la onpause");
+	}
 
-		
-		
 	private String retrieveContactName(String phoneNumber) {
-		String phoneNumberReverse = new StringBuffer(phoneNumber).reverse().toString();
-		String contactName = "Unknown number";;
+		String phoneNumberReverse = new StringBuffer(phoneNumber)
+												.reverse().toString();
+		String contactName = "Unknown number";
         ContentResolver cr = this.getContentResolver();
         Cursor cur = cr.query(
                         CommonDataKinds.Phone.CONTENT_URI,
@@ -79,105 +90,37 @@ public class RecvReqActivity extends Activity {
         Log.d("INFO", "Retrieve name: " + contactName );
         cur.close();
         return contactName;
-		
 	}
-	
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+		// Inflate the menu;this adds items to the action bar if it is present
 		getMenuInflater().inflate(R.menu.recv_req, menu);
 		return true;
 	}
-	
 	public void acceptReq(View v) {
 		Log.d("deb", "richiesta accettata");
 		
-		
-        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
-            new ClientTask().execute(ip_addr);
-        } else {
-            Log.d("net","No network connection available.");
+		if (conn.isMobileConnected) {
+			Intent i = new Intent(this, MapActivity.class);
+			i.putExtra("whoiam", config.CLIENT);
+			i.putExtra("serverAddr", serverAddr);
+			startActivity(i);
+	     } else {
+	    	 Log.d("deb", "MA NON SONO CONNESSO");
+	    	 conn.isOnline(this);
         }
-		
-		
-		
-		
 	}
-	
 	public void rejectReq(View v) {
-		Log.d("deb", "richiesta rifiutata (per ora lancia MapActivity toFIXME)");
-		//FIXME: solo di prova..
-		Intent i = new Intent(this, MapActivity.class);
-		startActivity(i);
-		
+		Log.d("deb", "richiesta rifiutata");
 		finish();
 	}
-	
-	
-	/*
-	 * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	 * 	ASYNCTASK
-	 * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	 *
-	 * */
 	//FIXME: per debuggare il client senza il messaggio
 	public void debugClient(View v) {
 		Log.d("Debug client","Simulo di aver accettato la richiesta");
 		EditText et=(EditText) findViewById(R.id.editText2);
-		String str = et.getText().toString();
-		new ClientTask().execute(str);
-		
-	}
-	public class ClientTask extends AsyncTask <String, Integer, Void> {
-
-		@Override
-		protected Void doInBackground(String... params) {
-			Log.d("Debug client","Sono nella asynctask background");
-			int serverPort = 12345;
-			PrintWriter out;
-	        BufferedReader in;
-	        String msg;
-	        
-			try {
-				Socket socket = new Socket( params[0], serverPort );
-				// per leggere e scrivere caratteri unicode sul socket
-				out = new PrintWriter(socket.getOutputStream(), true);
-				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-				out.println("hello by client");
-				msg = in.readLine();
-				Log.d("client rx:", msg);
-				
-				out.close();
-				in.close();
-				socket.close();
-				
-				
-			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			
-			return null;
-		}
-		
-//		@Override
-//	    protected void onPostExecute(String result) {
-//	        super.onPostExecute(result);
-//	        //Do anything with response..
-//    	}
-		
-		
-	}
-	
-	
-	
-	
-	
+		Intent i = new Intent(this, MapActivity.class);
+		i.putExtra("whoiam", "client");
+		i.putExtra("serverAddr", et.getText().toString());
+		startActivity(i);
+	}	
 }

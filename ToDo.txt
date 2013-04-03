@@ -1,7 +1,11 @@
+
+ToDo:
+	SOSPESO!
+	da fare scambio di coordinate in mapActivity e mostrare posizione dei due utenti
+	implementare la chat: va bene con un asyncTask...
+
 ALCUNE IDEE:
-    - dare la possibilità di inserire un numero manualmente
-    - activity per lo scambio di messaggi di testo all'interno della connessione
-    - controllare attentamente switch wifi-mobile -> online() etc...
+   
     - mostrare foto contatto (se possibile)
 			
 			

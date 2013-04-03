@@ -65,19 +65,21 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/editText1"
         android:layout_centerHorizontal="true"
-        android:text="@string/large_text"
+        android:text=""
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     
     <!-- FIXME: PER FAR FUNZIONARE IL CLIENT SENZA SMS -->
     <EditText
         android:id="@+id/editText2"
+        android:text="inserisci ip a cui connettersi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignRight="@+id/button2"
         android:layout_below="@+id/button2"
         android:layout_marginTop="36dp"
-        android:ems="10" android:inputType="text"/>
+        android:ems="10" 
+        android:inputType="text"/>
     <!-- FIXME: PER FAR FUNZIONARE IL CLIENT SENZA SMS -->
     <Button
         android:id="@+id/button3"
@@ -86,7 +88,17 @@
         android:layout_below="@+id/editText2"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
-        android:text="@string/ConnectButton" 
+        android:text="connessione manuale" 
         android:onClick="debugClient" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/textView2"
+        android:layout_below="@+id/button3"
+        android:layout_marginTop="26dp"
+        android:text="@string/connection_status"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </RelativeLayout>

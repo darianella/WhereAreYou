@@ -7,85 +7,76 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
-
-    <TextView
-        android:id="@+id/textView1"
+	<TextView
+        android:id="@+id/textViewContactName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
-
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView1"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:text="@string/contatti" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/button1"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="25dp"
-        android:text="@string/smsStatus"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/textView3"
-        android:layout_alignBottom="@+id/textView3"
-        android:layout_marginLeft="62dp"
-        android:layout_toRightOf="@+id/textView3"
-        android:text="@string/contactNum"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView1"
-        android:layout_below="@+id/textView2"
-        android:layout_marginLeft="26dp"
-        android:layout_marginTop="24dp"
         android:text="@string/contactSelected"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <EditText
-        android:id="@+id/editText1"
+    <Button
+        android:id="@+id/button_send_sms"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView3"
-        android:layout_below="@+id/textView3"
-        android:layout_marginTop="22dp"
-        android:ems="10"
-        android:inputType="phone" >
+        android:layout_above="@+id/button2"
+        android:layout_alignLeft="@+id/textViewContactName"
+        android:layout_marginBottom="84dp"
+        android:enabled="false"
+        android:onClick="sendSmsButton"
+        android:text="@string/button_send" />
 
-        <requestFocus />
-    </EditText>
-	
-	<!--FIXME: solo per debug: mi fa saltare diretto alle funzioni di server  -->
+   
+    <Button
+        android:id="@+id/buttonSelectContact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewContactName"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="19dp"
+        android:onClick="selectContact"
+        android:text="@string/contatti" />
+<!--FIXME: solo per debug: mi fa saltare diretto alle funzioni di server  -->
+    
     <Button
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editText1"
-        android:layout_marginTop="34dp"
-        android:layout_toRightOf="@+id/textView3"
-        android:text="@string/buttonServer" 
-        android:onClick="debugServer" />
+        android:layout_alignLeft="@+id/button_send_sms"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="63dp"
+        android:onClick="debugServer"
+        android:text="@string/buttonServer" />
 
-     <Button
-         android:id="@+id/button3"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_alignLeft="@+id/button1"
-         android:layout_below="@+id/button2"
-         android:layout_marginTop="27dp"
-         android:onClick="debugClient"
-         android:text="vai al clientside" />
+    <EditText
+        android:id="@+id/editTextPhoneNum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonSelectContact"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="14dp"
+        android:ems="10"
+        android:inputType="phone" />
+
+    <TextView
+        android:id="@+id/textViewMyIp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/button_send_sms"
+        android:layout_alignBottom="@+id/button_send_sms"
+        android:layout_alignRight="@+id/editTextPhoneNum"
+        android:text="@string/my_ip"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/button2"
+        android:layout_alignBottom="@+id/button2"
+        android:layout_alignRight="@+id/textViewMyIp"
+        android:onClick="debugClient"
+        android:text="clientside" />
 
 </RelativeLayout>
