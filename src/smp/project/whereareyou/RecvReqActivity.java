@@ -71,8 +71,8 @@ public class RecvReqActivity extends Activity {
 	}
 
 	private String retrieveContactName(String phoneNumber) {
-		String phoneNumberReverse = new StringBuffer(phoneNumber)
-												.reverse().toString();
+		String phoneNumberReverse = 
+				new StringBuffer(phoneNumber).reverse().toString();
 		String contactName = "Unknown number";
         ContentResolver cr = this.getContentResolver();
         Cursor cur = cr.query(

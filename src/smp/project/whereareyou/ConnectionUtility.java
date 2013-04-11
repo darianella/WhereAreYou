@@ -1,9 +1,22 @@
 package smp.project.whereareyou;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -17,13 +30,18 @@ import android.util.Log;
 
 public class ConnectionUtility {
 	
-	final Config config = new Config();
+	final Config conf = new Config();
 	
 	final String  CU = "[ConnectionUtility]"; // tag per log
-	String myIp =  config.NO_IP;
+	String myIp =  conf.NO_IP;
 	boolean isMobileConnected = false;
 	
-	// decidere se togliere la possibilità di funzionare con il wifi
+	/*
+	   ************************************************************************
+	   		 Funzioni per settare la connessione e verificarne lo stato
+	*/
+	
+	// FIXME: decidere se togliere la possibilità di funzionare con il wifi
 	public void isOnline(final Context context) {
 		Log.d(CU, "Chiamata la onLine");
 		ConnectivityManager cm = (ConnectivityManager) context
@@ -31,8 +49,8 @@ public class ConnectionUtility {
 		NetworkInfo ni = cm.getActiveNetworkInfo();
 		if (ni == null) {
 			Log.d(CU, "Attenzione: Connessione Mobile non disponibile");
-			showSettingsAlert(context, config.NOCONNECTION_MSG, 
-											config.ACTION_WIRELESS);
+			showSettingsAlert(context, conf.NOCONNECTION_MSG, 
+					conf.ACTION_WIRELESS);
 			isMobileConnected = false;
 		}
         else { // posso essere connesso al wifi o al mobile
@@ -47,7 +65,7 @@ public class ConnectionUtility {
         		AlertDialog.Builder builder = new AlertDialog.Builder(context);
         		builder.setTitle("Warning");
    	 			builder.setMessage("Per far funzionare l'app disattivare la " 
-   	 						+ "connessione WIFI e utilizzare quella Mobile");
+   	 					+ "connessione WIFI e utilizzare quella Mobile");
    	 			builder.setNegativeButton("No", 
    	 				new DialogInterface.OnClickListener() {
    	 					public void onClick(DialogInterface dialog, int id) {
@@ -71,8 +89,8 @@ public class ConnectionUtility {
         	}
 	   	}
 	}
-	public void setMyIp() {
-       	myIp = config.NO_IP;
+	public void setMyIp() { // FIXME: ora è il server a dirmelo!!
+       	myIp = conf.NO_IP;
        	isMobileConnected = false;
 		try {	
        		for (Enumeration<NetworkInterface> en = NetworkInterface
@@ -90,16 +108,17 @@ public class ConnectionUtility {
        		}
        	} catch (SocketException se) {
        		se.printStackTrace();
+       		Log.e("Error", se.getMessage());
        	}
 	}
 	public void showSettingsAlert(final Context context, 
-										String msg, final String action) {
+						String msg, final String action) {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
-        alertDialog.setTitle(config.SETTING_ALERT_TITLE);
+        alertDialog.setTitle(conf.SETTING_ALERT_TITLE);
         // Setting Dialog Message
         alertDialog.setMessage(msg);
         alertDialog.setPositiveButton("Settings", 
-        				new DialogInterface.OnClickListener() {
+        		new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog,int which) {
                 Intent intent = new Intent(action);
                 context.startActivity(intent);
@@ -112,5 +131,27 @@ public class ConnectionUtility {
             }
         });
         alertDialog.show();
+	}
+	/*
+	   ************************************************************************
+	   		 Funzioni per inviare richieste HTTP
+	*/
+	public void postMyNumber(String number) {
+	    // Create a new HttpClient and Post Header
+	    HttpClient httpclient = new DefaultHttpClient();
+	    HttpPost httppost = new HttpPost(conf.URL_SERVER);
+	    try {
+	    	List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+	        nameValuePairs.add(new BasicNameValuePair("phoneNumber", number));
+	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+	        // Execute HTTP Post Request
+	        ResponseHandler<String> responseHandler=new BasicResponseHandler();
+	        String responseBody = httpclient.execute(httppost, responseHandler);
+	        Log.d("httpResponseBody_myIP", responseBody);
+	    } catch (ClientProtocolException e) {
+	    	Log.e("Error", e.getMessage());
+	    } catch (IOException e) {
+	    	Log.e("Error", e.getMessage());
+	    }
 	}
 }

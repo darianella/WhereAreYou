@@ -1,0 +1,9 @@
+Progetto DoveCazzoSei
+due cellulari, che previa autorizzazione si scambiano informazioni relativamente alla loro posizione (GPS) così da poter vedere su una maps di google dove si trovano entrambi.
+
+- p2p: necessario comunicare tramite socket->indirizzo ip->si devono conoscere (ci vuole un serverino?)
+- possibilità di poter inviare facilmente un messaggio/email per comunicare eventuali ritardi o il fatto che siamo partiti.
+- interazione con il googlecalendar per pianificare appuntamenti
+- privacy: deve funzionare solo previa autorizzazione
+- database di tutti gli amici
+

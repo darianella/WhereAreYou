@@ -7,8 +7,8 @@ public class Config {
 	//Message
 	final String TOKEN_APP_NAME = "[WhereAreYou]";
 	final String TOKEN_DELIMITER = ";";
-	final String SMS_TXT_MSG = "Hai ricevuto una richiesta per l'applicazione " +
-								"WhereAreYou. Scaricala all'indirizzo: N.D. ...";
+	final String SMS_TXT_MSG = "Hai ricevuto una richiesta per l'applicazione "
+							+ "WhereAreYou. Scaricala all'indirizzo: N.D. ...";
 	
 	final String NOCONNECTION_MSG = "Mobile connection is not enabled. " +
 										"Do you want to go to settings menu?";
@@ -22,7 +22,12 @@ public class Config {
 	final String CLIENT = "client";
 	final String SERVER = "server";
 	//Socket
-	final int SERVER_PORT = 12345;
+	final int SERVER_PORT = 12345; //FIXME
+	final String URL_SERVER = "http://darianella.altervista.org/WAYServer.php";
+	
+	
+	//Preference
+	final String FIRST_TIME_APP = "first time";
 	
 	
 	

@@ -6,6 +6,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -26,12 +28,26 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		smrFilter = new IntentFilter(SendSmsManagerReceiver.AZIONE); 
+		//devo vedere se sono registrato sul server
+		//->guardo localmente sulle mie pref
+		SharedPreferences pref = getPreferences(MODE_PRIVATE);
+//		if (pref.getBoolean(config.FIRST_TIME_APP, true)) {	//FIXME
+			Log.d("TMP_1", "prima volta che uso l'app");
+			startActivity(new Intent(this, RegisterActivity.class));
+//		}
+		
+		
+		
+		
+		smrFilter = new IntentFilter(SendSmsManagerReceiver.AZIONE);
 		smrFilter.addCategory(Intent.CATEGORY_DEFAULT);
 		smr = new SendSmsManagerReceiver();
 		registerReceiver(smr, smrFilter);	
 		
 		conn = new ConnectionUtility();
+		
+		
+		
 		
 		EditText et = (EditText) findViewById(R.id.editTextPhoneNum);
 		et.addTextChangedListener(new TextWatcher() {
@@ -81,7 +97,8 @@ public class MainActivity extends Activity {
 	public void sendSmsButton(View v) {
 		Intent intent = new Intent(this, SndSmsIntentService.class);
 		EditText et = (EditText) findViewById(R.id.editTextPhoneNum);
-		String number = et.getText().toString();
+		CharSequence number = et.getText();
+//		String number = et.getText().toString();
 		if (!TextUtils.isEmpty(number)) {
 			intent.putExtra("contact_num", number);
 			intent.putExtra("ip_addr", conn.myIp);
@@ -91,7 +108,7 @@ public class MainActivity extends Activity {
 			startActivity(intent2);
 		} else {
 			Toast.makeText(getApplicationContext(), "No number!",
-							Toast.LENGTH_LONG).show();
+					Toast.LENGTH_LONG).show();
 		}
 	}
 	
@@ -112,7 +129,7 @@ public class MainActivity extends Activity {
 	/*
 	   ************************************************************************
 			BroadcastReceiver:  riceve le info sul contatto selezionato
-	 */
+	*/
 	
 	public class SendSmsManagerReceiver extends BroadcastReceiver {
 		static final String AZIONE = "smp.project.whereareyou.READY_TO_SEND";
